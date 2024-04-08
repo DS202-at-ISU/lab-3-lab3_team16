@@ -4,19 +4,17 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit the README.Rmd file -->
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Lab report #3 - instructions
 
-Follow the instructions posted at https://ds202-at-isu.github.io/labs.html for the lab assignment. The work is meant to be finished during the lab time, but you have time until Monday evening to polish things.
+Follow the instructions posted at <https://ds202-at-isu.github.io/labs.html> for the lab assignment. The work is meant to be finished during the lab time, but you have time until Monday evening to polish things.
 
-Include your answers in this document (Rmd file). Make sure that it knits properly (into the md file). Upload both the Rmd and the md file to your repository.  
+Include your answers in this document (Rmd file). Make sure that it knits properly (into the md file). Upload both the Rmd and the md file to your repository.
 
-All submissions to the github repo will be automatically uploaded for grading once the due date is passed.
-Submit a link to your repository on Canvas (only one submission per team) to signal to the instructors that you are done with your submission.
+All submissions to the github repo will be automatically uploaded for grading once the due date is passed. Submit a link to your repository on Canvas (only one submission per team) to signal to the instructors that you are done with your submission.
 
 # Lab 3: Avenger's Peril
 
@@ -27,14 +25,20 @@ Extract from the data below two data sets in long form `deaths` and `returns`
 ```{r}
 av <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv", stringsAsFactors = FALSE)
 head(av)
+library(tidyverse)
+library(dplyr)
 ```
 
-Get the data into a format where the five columns for Death[1-5] are replaced by two columns: Time, and Death. Time should be a number between 1 and 5 (look into the function `parse_number`); Death is a categorical variables with values "yes", "no" and "". Call the resulting data set `deaths`. 
-```{}
-Completed by Dhairya Kachalia
+Get the data into a format where the five columns for Death[1-5] are replaced by two columns: Time, and Death. Time should be a number between 1 and 5 (look into the function `parse_number`); Death is a categorical variables with values "yes", "no" and "". Call the resulting data set `deaths`.
+
+-   ***I couldn't run Dhairya Kachalia's code so I wrote my own group part code(Need to comment Dhairya's code to run my code) — Chen***
+
+```         
+Completed by Dhairya Kachalia, Chen Sang
 ```
 
 ```{r}
+##Dhairya Kachalia's Group Part
 #get sum of deaths in Time column
 death_cols <-av[c("Death1","Death2","Death3","Death4","Death5")]
 return_cols <-av[c("Return1","Return2","Return3","Return4","Return5")]
@@ -49,25 +53,59 @@ av<-av %>% rename("Death"="Death1")
 av<-av %>% rename("Return"="Return1")
 
 rm(death_cols)
+
+
+###Chen's Part for group part
+
+# Perform transformations and store the result in 'av_transformed'
+av_transformed <- av %>%
+  mutate(
+    Time = rowSums(select(., starts_with("Death")) == "YES", na.rm = TRUE),
+    Return_Time = rowSums(select(., starts_with("Return")) == "YES", na.rm = TRUE)
+  ) %>%
+  select(-matches("^Death[2-5]$"), -matches("^Return[2-5]$")) %>%
+  rename(Death = Death1, Return = Return1)
+
+# View the modified dataframe
+print(av_transformed)
+
 ```
 
 Similarly, deal with the returns of characters.
 
-Based on these datasets calculate the average number of deaths an Avenger suffers. 
+Based on these datasets calculate the average number of deaths an Avenger suffers.
+
 ```{r}
+##Dhairya Kachalia's Group Part
 cat("The average deaths an avenger get is ", mean(av$Time),"\n")
+
+
+###Chen's part
+# Calculate the average number of deaths
+average_deaths <- mean(av_transformed$Time, na.rm = TRUE)
+
+# Print the average number of deaths
+print(average_deaths)
+```
+
+**Chen's part: I couldn't run Dhairya Kachalia's code So I have my own code for group part**
+
+-   Need to comment out Dhairya Kachalia's code to be able to run my code
+
+```         
 ```
 
 ## Individually
 
-For each team member, copy this part of the report. 
+For each team member, copy this part of the report.
 
 Each team member picks one of the statements in the FiveThirtyEight [analysis](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) and fact checks it based on the data. Use dplyr functionality whenever possible.
 
 ### FiveThirtyEight Statement
 
 > Quote the statement you are planning to fact-check.
-```{}
+
+```         
 Dhairya Kachalia analysis statement:
 Out of 173 listed Avengers, my analysis found that 69 had died at least one time after they joined the team. That’s about 40 percent of all people who have ever signed on to the team. 
 ```
@@ -77,7 +115,8 @@ Out of 173 listed Avengers, my analysis found that 69 had died at least one time
 filter_row <- av[av$Time >=1,]
 cat("the total number of avengers that died atleast once is", nrow(filter_row), "\n")
 ```
-```{}
+
+```         
 statement2: Of the nine Avengers we see on screen — Iron Man, Hulk, Captain America, Thor, Hawkeye, Black Widow, Scarlet Witch, Quicksilver and The Vision — every single one of them has died at least once in the course of their time Avenging in the comics. In fact, Hawkeye died twice!
 ```
 
@@ -90,11 +129,13 @@ tv_avengers <- av %>% select(Name.Alias,Time) %>%  filter(Name.Alias %in% c("Ant
 tv_avengers
 # the tv_anvegers table shows that the avengers in this analysis died atleast once and Hawkeye i.e Clinton Francis Barton died twice
 ```
-```{}
+
+```         
 statement 3: I counted 89 total deaths — some unlucky Avengers7 are basically Meat Loaf with an E-ZPass — and on 57 occasions the individual made a comeback. But you can only tempt death so many times. There’s a 2-in-3 chance that a member of the Avengers returned from their first stint in the afterlife, but only a 50 percent chance they recovered from a second or third death.
 ```
 
 ```{r}
+
 #gives the sum of the total number of deaths in av. Also adds multiple deaths of same character
 sum_deaths <- sum(av$Time, na.rm = TRUE)
 
@@ -117,9 +158,38 @@ gg <- av %>% filter(av$Return_Time>1)
 #sum of ocassions where the character made more than one time
 sum_returns_more_than_once <-sum(gg$Return_Time, na.rm = TRUE)
 
-
-
 ```
+
+```         
+```
+
+# Chen Sang's Part:
+
+### FiveThirtyEight Statement
+
+For each team member, copy this part of the report.
+
+Each team member picks one of the statements in the FiveThirtyEight [analysis](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) and fact checks it based on the data. Use dplyr functionality whenever possible. \`\`\`
+
+-   Chen Sang's Statement:
+
+    -   "There’s a 2/3 chance that a member of the Avengers returned from their first stint in the afterlife."
+
+        ```{r}
+        # Correct usage of filter without data frame prefix inside the function
+        total_deaths_occasions <- av_transformed %>%
+          filter(Time >= 1) %>%
+          nrow()
+
+        # Similarly, for total occasions of returns if you have a 'Return_Time' or similar column
+        total_returns_occasions <- av_transformed %>%
+          filter(Return_Time >= 1) %>%
+          nrow()
+
+        # Print the results
+        print(paste("Total occasions of deaths:", total_deaths_occasions)) #69 death
+        print(paste("Total occasions of returns:", total_returns_occasions)) # 46 return
+        ```
 
 ### Include the code
 
