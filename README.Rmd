@@ -189,7 +189,24 @@ Each team member picks one of the statements in the FiveThirtyEight [analysis](h
         # Print the results
         print(paste("Total occasions of deaths:", total_deaths_occasions)) #69 death
         print(paste("Total occasions of returns:", total_returns_occasions)) # 46 return
-        ```
+
+```
+
+-   Siddhartha's statement:
+ ```{r}
+avengers_pre_2000 <- df %>%
+  summarise(Total = n(),
+            Pre_2000 = sum(Year < 2000),
+            Percent_Pre_2000 = Pre_2000 / Total * 100)
+
+print(avengers_pre_2000)
+
+```
+
+
+Out of 173 Avengers in the dataset, 90 were introduced before the year 2000. 
+This is approximately 52.02% of the Avengers 
+All thse made their first appearance before the year 2000.
 
 ### Include the code
 
